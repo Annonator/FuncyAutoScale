@@ -1,0 +1,14 @@
+﻿{
+  "frameworks": {
+    "net46": {
+      "dependencies": {
+        "Microsoft.Azure.Management.Authorization": "2.0.0",
+        "Microsoft.Azure.Management.ResourceManager": "1.4.0-preview",
+        "Microsoft.Rest.ClientRuntime.Azure.Authentication": "2.2.8-preview",
+        "Microsoft.Azure.Management.Compute": "13.1.0-prerelease",
+        "Microsoft.Azure.Management.Network": "8.3.0-preview",
+        "Microsoft.Azure.Common": "2.1.0"
+      }
+    }
+  }
+}
