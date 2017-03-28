@@ -15,25 +15,23 @@ namespace FuncySharedCode
         private readonly string _pathToTemplateFile;
         private readonly string _resourceGroupLocation;
         private readonly string _resourceGroupName;
-        private TraceWriter _log;
 
         private ResourceManagementClient _resourceManagementClient;
 
-        public DeploymentHelper(TraceWriter log, CredentialHelper credentials, string deploymentName,
+        public DeploymentHelper(CredentialHelper credentials, string deploymentName,
             string resourceGroupName,
             string resourceGroupLocation)
             : this(
-                log, credentials, deploymentName, resourceGroupName, resourceGroupLocation,
+                credentials, deploymentName, resourceGroupName, resourceGroupLocation,
                 "Data\\infrastructureParameter.json", "Data\\infrastructureTemplate.json")
         {
         }
 
-        public DeploymentHelper(TraceWriter log, CredentialHelper credentials, string deploymentName,
+        public DeploymentHelper(CredentialHelper credentials, string deploymentName,
             string resourceGroupName,
             string resourceGroupLocation,
             string pathToParameterFile, string pathToTemplateFile)
         {
-            this._log = log;
             this._credentials = credentials;
             this._deploymentName = deploymentName;
             this._resourceGroupName = resourceGroupName;
@@ -42,7 +40,7 @@ namespace FuncySharedCode
             this._pathToTemplateFile = pathToTemplateFile;
         }
 
-        public void StartDeployment()
+        public string StartDeployment()
         {
             var serviceCreds = this._credentials.GetServiceClientCrendtials();
 
@@ -61,7 +59,7 @@ namespace FuncySharedCode
             };
 
             this.EnsureResourceGroupExists();
-            this.DeployTemplate(template, parameters);
+            return this.DeployTemplate(template, parameters);
         }
 
         private string GetRandomString()
@@ -85,14 +83,8 @@ namespace FuncySharedCode
         {
             if (this._resourceManagementClient.ResourceGroups.CheckExistence(this._resourceGroupName) != true)
             {
-                Console.WriteLine(
-                    $"Creating resource group '{this._resourceGroupName}' in location '{this._resourceGroupLocation}'");
                 var resourceGroup = new ResourceGroup {Location = this._resourceGroupLocation};
                 this._resourceManagementClient.ResourceGroups.CreateOrUpdate(this._resourceGroupName, resourceGroup);
-            }
-            else
-            {
-                Console.WriteLine($"Using existing resource group '{this._resourceGroupName}'");
             }
         }
 
@@ -101,10 +93,8 @@ namespace FuncySharedCode
         /// </summary>
         /// <param name="templateFileContents">The template file contents.</param>
         /// <param name="parameterFileContents">The parameter file contents.</param>
-        private void DeployTemplate(JObject templateFileContents, JObject parameterFileContents)
+        private string DeployTemplate(JObject templateFileContents, JObject parameterFileContents)
         {
-            Console.WriteLine(
-                $"Starting template deployment '{this._deploymentName}' in resource group '{this._resourceGroupName}'");
             var deployment = new Deployment
             {
                 Properties = new DeploymentProperties
@@ -120,10 +110,11 @@ namespace FuncySharedCode
             {
                 this._resourceManagementClient.Deployments.BeginCreateOrUpdate(this._resourceGroupName,
                     this._deploymentName, deployment);
+                return "success!!";
             }
             catch (CloudException e)
             {
-                Console.WriteLine($"Exception Message: {e.Response.Content}");
+                return $"Exception Message: {e.Response.Content}";
             }
         }
     }
