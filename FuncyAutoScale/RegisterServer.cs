@@ -8,11 +8,11 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Logging;
 using Newtonsoft.Json;
 
-namespace FuncyAutoScale.GetServer
+namespace FuncyAutoScale
 {
-    public static class GetServer
+    public static class RegisterServer
     {
-        [FunctionName("GetServer")]
+        [FunctionName("RegisterServer")]
         public static async Task<IActionResult> Run(
             [HttpTrigger(AuthorizationLevel.Function, "get", "post", Route = null)] HttpRequest req,
             ILogger log)
